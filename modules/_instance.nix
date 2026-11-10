@@ -126,7 +126,7 @@ in {
       readOnly = true;
       internal = true;
       default = rec {
-        base = "/var/lib/minecraft-servers/${name}";
+        base = "${globalConfig.services.yanms.dataDir}/${name}";
         # Overlay upper layer: everything the server writes. Backed up.
         state = "${base}/state";
         # Overlay work directory.

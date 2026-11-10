@@ -4,7 +4,7 @@
   pkgs,
   module,
 }: let
-  base = "/var/lib/minecraft-servers/fake";
+  base = "/srv/minecraft-servers/fake";
   server = "${base}/server";
 
   fakeServer = pkgs.runCommand "fake-minecraft-server" {} ''
@@ -42,6 +42,7 @@ in
 
       services.yanms = {
         eula = true;
+        dataDir = "/srv/minecraft-servers";
         backup.restic = {
           repositoryPrefix = "/var/backup";
           passwordFile = "${pkgs.writeText "restic-password" "password"}";
@@ -106,13 +107,16 @@ in
           assert "Automatic saving is now enabled" in server_log
           machine.succeed("restic -r /var/backup/fake --password-file ${pkgs.writeText "restic-password" "password"} ls latest | grep -F world/level.dat")
 
-      with subtest("forced files come back, state stays"):
+      with subtest("forced files come back, state stays, state owner is fixed"):
           machine.succeed("echo edited > ${server}/config/declared.conf")
+          # As after a restore from another host.
+          machine.succeed("chown -R root:root ${base}/state")
           machine.succeed("systemctl restart mc-fake-layers.service")
           machine.wait_for_unit("mc-fake.service")
           machine.wait_until_succeeds("journalctl -u mc-fake.service | grep -c -F 'Done (1.0s)' | grep -Fx 2")
           machine.succeed("grep -Fx 'declared secret-value' ${server}/config/declared.conf")
           machine.succeed("test -e ${server}/world/level.dat")
+          machine.succeed("stat -c %U ${base}/state/world/level.dat | grep -Fx mc-fake")
 
       with subtest("graceful stop"):
           machine.succeed("systemctl stop mc-fake.service")

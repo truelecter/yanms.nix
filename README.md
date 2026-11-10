@@ -56,7 +56,7 @@ Yet another NixOS Minecraft server module: modpack servers (Forge, from CurseFor
 
 ## How an instance runs
 
-Each instance `<name>` gets the user `mc-<name>` and the folder `/var/lib/minecraft-servers/<name>`:
+Each instance `<name>` gets the user `mc-<name>` and the folder `<dataDir>/<name>` (`services.yanms.dataDir`, default `/var/lib/minecraft-servers`). A state restored from another host is given to `mc-<name>` at start.
 
 | Path      | What it is                                                                                     |
 | --------- | ---------------------------------------------------------------------------------------------- |

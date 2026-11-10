@@ -182,6 +182,11 @@
         rmdir ${q "${p.base}/workdir"} 2>/dev/null || true
       fi
 
+      # A restored or moved state keeps the old host's owner: give it to this instance's user.
+      if [ "$(stat -c %U ${q p.state})" != ${user} ]; then
+        chown -R ${user}:${group} ${q p.state}
+      fi
+
       # The package, copied once per store path: the store's files are root-owned and read-only,
       # and the server rewrites some of them (configs), which needs a writable lower file.
       if [ ! -e ${q "${pack}.complete"} ]; then
@@ -374,6 +379,13 @@ in {
       type = types.bool;
       default = false;
       description = "Whether you accept the Minecraft EULA (https://aka.ms/MinecraftEULA).";
+    };
+
+    dataDir = mkOption {
+      type = types.str;
+      default = "/var/lib/minecraft-servers";
+      example = "/srv/minecraft-servers";
+      description = "Folder with one folder per instance (state, pack copy, overlay).";
     };
 
     users.extraGroups = mkOption {
