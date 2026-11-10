@@ -182,9 +182,11 @@
         rmdir ${q "${p.base}/workdir"} 2>/dev/null || true
       fi
 
-      # A restored or moved state keeps the old host's owners: give it to this instance's user.
-      if find ${q p.state} ! -user ${user} -print -quit | grep -q .; then
+      # A restored or moved state keeps the old host's owners, and states from bindfs setups hold
+      # read-only copies of store files: give everything to this instance's user, writable.
+      if find ${q p.state} \( ! -user ${user} -o ! -perm -u+w \) -print -quit | grep -q .; then
         chown -R ${user}:${group} ${q p.state}
+        chmod -R u+w ${q p.state}
       fi
 
       # The package, copied once per store path: the store's files are root-owned and read-only,

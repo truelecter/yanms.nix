@@ -111,12 +111,14 @@ in
           machine.succeed("echo edited > ${server}/config/declared.conf")
           # As after a restore from another host.
           machine.succeed("chown -R root:root ${base}/state/world")
+          machine.succeed("chmod a-w ${base}/state/config/pack.conf")
           machine.succeed("systemctl restart mc-fake-layers.service")
           machine.wait_for_unit("mc-fake.service")
           machine.wait_until_succeeds("journalctl -u mc-fake.service | grep -c -F 'Done (1.0s)' | grep -Fx 2")
           machine.succeed("grep -Fx 'declared secret-value' ${server}/config/declared.conf")
           machine.succeed("test -e ${server}/world/level.dat")
           machine.succeed("stat -c %U ${base}/state/world/level.dat | grep -Fx mc-fake")
+          machine.succeed("stat -c %A ${base}/state/config/pack.conf | grep -F -- -rw-")
 
       with subtest("graceful stop"):
           machine.succeed("systemctl stop mc-fake.service")
