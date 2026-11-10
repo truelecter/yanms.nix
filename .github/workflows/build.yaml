@@ -33,7 +33,8 @@ jobs:
         run: nix flake check -L
 
       - name: Evaluate every pack
-        run: nix eval --json '.#packages.${{ matrix.system }}' --apply 'builtins.mapAttrs (_: p: p.drvPath)'
+        run: |
+          nix eval --json '.#packages.${{ matrix.system }}' --apply 'builtins.mapAttrs (_: p: p.drvPath)'
 
   build_aggregated:
     if: ${{ always() }}
