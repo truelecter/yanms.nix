@@ -110,7 +110,7 @@ in
       with subtest("forced files come back, state stays, state owner is fixed"):
           machine.succeed("echo edited > ${server}/config/declared.conf")
           # As after a restore from another host.
-          machine.succeed("chown -R root:root ${base}/state")
+          machine.succeed("chown -R root:root ${base}/state/world")
           machine.succeed("systemctl restart mc-fake-layers.service")
           machine.wait_for_unit("mc-fake.service")
           machine.wait_until_succeeds("journalctl -u mc-fake.service | grep -c -F 'Done (1.0s)' | grep -Fx 2")

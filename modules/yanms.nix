@@ -170,7 +170,7 @@
 
     layers = pkgs.writeShellScript "${user}-layers" ''
       set -euo pipefail
-      PATH=${lib.makeBinPath [pkgs.coreutils pkgs.findutils pkgs.util-linux]}
+      PATH=${lib.makeBinPath [pkgs.coreutils pkgs.findutils pkgs.gnugrep pkgs.util-linux]}
 
       if mountpoint -q ${q p.server}; then
         umount ${q p.server}
@@ -182,8 +182,8 @@
         rmdir ${q "${p.base}/workdir"} 2>/dev/null || true
       fi
 
-      # A restored or moved state keeps the old host's owner: give it to this instance's user.
-      if [ "$(stat -c %U ${q p.state})" != ${user} ]; then
+      # A restored or moved state keeps the old host's owners: give it to this instance's user.
+      if find ${q p.state} ! -user ${user} -print -quit | grep -q .; then
         chown -R ${user}:${group} ${q p.state}
       fi
 
