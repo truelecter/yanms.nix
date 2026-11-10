@@ -1,0 +1,49 @@
+# Checks the flake (including the NixOS test, which needs KVM) and evaluates every pack. The packs
+# themselves are not built here: they are multi-gigabyte fixed-output downloads, built by the
+# consumers that use them. `build_aggregated` always reports, so it can be the one required check.
+name: Build
+on:
+  push:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - system: x86_64-linux
+            runner: ubuntu-24.04
+          - system: aarch64-linux
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    steps:
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/install-nix
+
+      - name: Check the flake
+        run: nix flake check -L
+
+      - name: Evaluate every pack
+        run: nix eval --json '.#packages.${{ matrix.system }}' --apply 'builtins.mapAttrs (_: p: p.drvPath)'
+
+  build_aggregated:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - run: exit 1
+        if: >-
+          ${{
+            contains(needs.*.result, 'failure')
+            || contains(needs.*.result, 'cancelled')
+            || contains(needs.*.result, 'skipped')
+          }}
