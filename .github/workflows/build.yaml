@@ -20,7 +20,9 @@ jobs:
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 60
     steps:
+      # The arm runners have no KVM; the test then runs emulated, slower but fine.
       - name: Enable KVM
+        if: ${{ matrix.system == 'x86_64-linux' }}
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
