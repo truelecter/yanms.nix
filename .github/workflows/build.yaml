@@ -1,4 +1,4 @@
-# Checks the flake (including the NixOS test, which needs KVM) and evaluates every pack. The packs
+# Checks the flake (the NixOS test runs on x86_64, which has KVM) and evaluates every pack. The packs
 # themselves are not built here: they are multi-gigabyte fixed-output downloads, built by the
 # consumers that use them. `build_aggregated` always reports, so it can be the one required check.
 name: Build
@@ -20,7 +20,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 60
     steps:
-      # The arm runners have no KVM; the test then runs emulated, slower but fine.
+      # The arm runners have no KVM, so the NixOS test only runs on x86_64; arm evaluates it.
       - name: Enable KVM
         if: ${{ matrix.system == 'x86_64-linux' }}
         run: |
@@ -32,7 +32,7 @@ jobs:
       - uses: ./.github/actions/install-nix
 
       - name: Check the flake
-        run: nix flake check -L
+        run: nix flake check -L ${{ matrix.system != 'x86_64-linux' && '--no-build' || '' }}
 
       - name: Evaluate every pack
         run: |
