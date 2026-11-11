@@ -24,7 +24,7 @@ sources/                     nvfetcher: `nvfetcher.toml` and the generated sourc
 
 ## Module
 
-- Overlay per instance: `state/` (upper) over `custom/` over a copy of the pack in `packs/`. `mc-<name>-layers.service` (root) builds and mounts it; the server service is `PartOf` it, so restarting the layers restarts the server. Don't put store paths straight into the overlay: the store is root-owned and read-only, and writes through a symlink into it fail with EROFS.
+- Overlay per instance: `state/` (upper) over `custom/` over `packs/<store name>` (the pack's folders and non-jar files, owned by the instance user) over the pack in the store. `mc-<name>-layers.service` (root) builds and mounts it; the server service is `PartOf` it, so restarting the layers restarts the server. A server can only rewrite a lower file it may write, so a file the server changes must not come from the store layer (root-owned, `0444`), and writes through a symlink into the store fail with EROFS. Only jars are left in the store layer.
 - The console is a FIFO socket unit; the stop script and the backup hooks write to it. `mc-<name>-cmd --wait` reads the server's journal, so the backup hooks run as root (`+` in `ExecStartPre`/`ExecStopPost` of the restic unit).
 - `config` keeps static top-level keys, with the per-instance parts merged below each of them (`systemd.services`, `users.users`, ...). A top-level `mkMerge` over instances recurses into `services.yanms` itself.
 - `backup.restic` reuses nixpkgs' `services.restic.backups` options; options it can't take over (their defaults read the backup's own name) go in `managed` in `modules/_backup-restic.nix`.

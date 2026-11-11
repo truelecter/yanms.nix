@@ -38,9 +38,10 @@ in {
     serverPackage = mkOption {
       type = types.package;
       description = ''
-        The installed server (for example a `mkForgeServer` pack). It is copied to the instance's
-        folder once per store path, owned by the instance user, and used as the overlay's lowest
-        layer; `start.sh` in it starts the server.
+        The installed server (for example a `mkForgeServer` pack), the overlay's lowest layer;
+        `start.sh` in it starts the server. Its folders and every file but the jars are copied to
+        the instance's folder once per store path, owned by the instance user, so the server can
+        rewrite them; jars stay read-only in the store.
       '';
     };
 
@@ -133,7 +134,7 @@ in {
         work = "${base}/work";
         # Middle layer, rebuilt at every start: `customization` and the generated files.
         custom = "${base}/custom";
-        # Copies of `serverPackage`, one per store path, owned by the instance user.
+        # The writable part of `serverPackage` (folders, files but jars), one per store path.
         packs = "${base}/packs";
         # The merged overlay, the server's working directory.
         server = "${base}/server";

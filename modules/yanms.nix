@@ -1,9 +1,10 @@
 # services.yanms: Minecraft servers on an overlay of the read-only server package.
 #
 # Per instance `<name>` (unit and user `mc-<name>`):
-#   mc-<name>-layers.service  root oneshot: copies the package (once per store path), rebuilds the
-#                             `custom` layer, drops forced paths from the state, mounts the overlay
-#                             state (upper) : custom : package copy  on `server/`
+#   mc-<name>-layers.service  root oneshot: copies the package's folders and non-jar files (once
+#                             per store path), rebuilds the `custom` layer, drops forced paths from
+#                             the state, mounts the overlay on `server/`:
+#                             state (upper) : custom : package copy : package in the store
 #   mc-<name>.socket          the console, a FIFO at /run/yanms/<name>.stdin
 #   mc-<name>.service         the server, stdin from the FIFO, stopped with `stop`
 #   mc-<name>-cmd             sends a console command, optionally waits for its log line
@@ -189,16 +190,23 @@
         chmod -R u+w ${q p.state}
       fi
 
-      # The package, copied once per store path: the store's files are root-owned and read-only,
-      # and the server rewrites some of them (configs), which needs a writable lower file.
-      if [ ! -e ${q "${pack}.complete"} ]; then
+      # The package's folders and every file but the jars, copied once per store path and owned by
+      # the instance user: the store's files are root-owned and read-only, and the server rewrites
+      # some of them (configs), which needs a writable lower file. The jars, most of the size and
+      # never written, come from the store itself, the lowest layer.
+      if [ ! -e ${q "${pack}.writable"} ]; then
         rm -rf ${q pack}
-        cp -a ${q icfg.serverPackage} ${q pack}
+        mkdir -p ${q pack}
+        (
+          cd ${q icfg.serverPackage}
+          find . -type d -print0 | (cd ${q pack} && xargs -0 mkdir -p)
+          find . ! -type d ! -name '*.jar' -print0 | xargs -0 -r cp -a --parents -t ${q pack}
+        )
         chown -R ${user}:${group} ${q pack}
         chmod -R u+w ${q pack}
-        touch ${q "${pack}.complete"}
+        touch ${q "${pack}.writable"}
       fi
-      find ${q p.packs} -mindepth 1 -maxdepth 1 ! -name ${q (builtins.baseNameOf pack)} ! -name ${q "${builtins.baseNameOf pack}.complete"} -exec rm -rf {} +
+      find ${q p.packs} -mindepth 1 -maxdepth 1 ! -name ${q (builtins.baseNameOf pack)} ! -name ${q "${builtins.baseNameOf pack}.writable"} -exec rm -rf {} +
 
       # The custom layer.
       rm -rf ${q p.custom}
@@ -219,7 +227,7 @@
         resetPaths}
 
       mount -t overlay overlay \
-        -o ${q "lowerdir=${p.custom}:${pack},upperdir=${p.state},workdir=${p.work}"} \
+        -o ${q "lowerdir=${p.custom}:${pack}:${icfg.serverPackage},upperdir=${p.state},workdir=${p.work}"} \
         ${q p.server}
     '';
 

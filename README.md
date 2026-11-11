@@ -62,10 +62,10 @@ Each instance `<name>` gets the user `mc-<name>` and the folder `<dataDir>/<name
 | --------- | ---------------------------------------------------------------------------------------------- |
 | `state/`  | The overlay's upper layer: the world and everything else the server writes. This is backed up. |
 | `custom/` | Middle layer, rebuilt at every start: `customization`, `server.properties`, `eula.txt`         |
-| `packs/`  | A copy of `serverPackage`, made once per store path and owned by `mc-<name>`                   |
+| `packs/`  | The writable part of `serverPackage`: its folders and every file but the jars, owned by `mc-<name>`, made once per store path |
 | `server/` | The merged overlay, the server's working directory                                             |
 
-The pack stays a fixed-output derivation in the store, so changing a customization never rebuilds or re-uploads it. It is copied once per version because the store's files are root-owned and read-only, and servers rewrite some of them.
+The pack stays a fixed-output derivation in the store, so changing a customization never rebuilds or re-uploads it, and the store copy is the overlay's lowest layer. The store's files are root-owned and read-only, and servers rewrite some of them (configs), so everything but the jars is copied to `packs/` once per version; the jars, most of a pack's size, stay in the store.
 
 Units:
 

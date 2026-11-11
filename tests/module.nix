@@ -11,6 +11,7 @@
     mkdir -p $out/config $out/mods
     echo original > $out/config/pack.conf
     echo jar > $out/mods/remove-me.jar
+    echo kept > $out/mods/kept.jar
     cat > $out/start.sh <<'EOF'
     #!/bin/sh
     echo "fake server starting: $JVM_ARGS $SERVER_ARGS"
@@ -89,6 +90,11 @@ in
           # The server rewrote a file of the package: copied up into the state.
           machine.succeed("grep -F changed-by-server ${base}/state/config/pack.conf")
           machine.succeed("grep -Fx original ${base}/packs/*-fake-minecraft-server/config/pack.conf")
+          # Jars come from the store, the rest of the package is copied.
+          machine.succeed("grep -Fx kept ${server}/mods/kept.jar")
+          machine.fail("test -e ${base}/packs/*-fake-minecraft-server/mods/kept.jar")
+          machine.succeed("test -d ${base}/packs/*-fake-minecraft-server/mods")
+          machine.succeed("test -x ${base}/packs/*-fake-minecraft-server/start.sh")
           machine.succeed("stat -c %U ${base}/state/config/pack.conf | grep -Fx mc-fake")
 
       with subtest("hardening"):
