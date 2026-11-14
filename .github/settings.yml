@@ -1,0 +1,25 @@
+# Repository settings, applied by the Settings GitHub app (https://github.com/repository-settings/app).
+branches:
+- name: main
+  protection:
+    enforce_admins: false
+    required_pull_request_reviews: null
+    required_status_checks:
+      contexts:
+      - build_aggregated
+      strict: true
+    restrictions: null
+repository:
+  allow_auto_merge: true
+  allow_merge_commit: true
+  allow_rebase_merge: false
+  allow_squash_merge: true
+  default_branch: main
+  delete_branch_on_merge: true
+  description: Yet another nix-managed minecraft server
+  has_downloads: false
+  has_issues: true
+  has_projects: false
+  has_wiki: true
+  name: yanms.nix
+  private: false

@@ -13,7 +13,7 @@ packages/_files/             the packs' `start.sh` scripts
 modules/yanms.nix            the module; `_`-prefixed files are its submodules
 tests/module.nix             NixOS test with a fake server (`checks.<system>.module`)
 sources/                     nvfetcher: `nvfetcher.toml` and the generated sources (packs, installers, mods)
-.github/                     build on every push, weekly source and lock update
+.github/                     build on every push, weekly source and lock update, repo settings (`settings.yml`)
 ```
 
 ## Packs
