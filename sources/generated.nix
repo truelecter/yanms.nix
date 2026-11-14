@@ -4,7 +4,8 @@
   fetchurl,
   fetchFromGitHub,
   dockerTools,
-}: {
+}:
+{
   forge-server-14-23-5-2860 = {
     pname = "forge-server-14-23-5-2860";
     version = "14.23.5.2860";
@@ -75,14 +76,6 @@
     src = fetchurl {
       url = "https://mediafilez.forgecdn.net/files/6654/829/Vault-Hunters-3rd-Edition-3.18.3.1-server-files.zip";
       sha256 = "sha256-gG6eXp+0dVTRHRzerkRptW4tm2fqaDmvo5kwxlOmigc=";
-    };
-  };
-  server-starter = {
-    pname = "server-starter";
-    version = "2.5.1";
-    src = fetchurl {
-      url = "https://github.com/EnigmaticaModpacks/ServerStarter/releases/download/v2.5.1/serverstarter-2.5.1.jar";
-      sha256 = "sha256-r9TtemmEghY5soQhMoGYKlmYw7eUq0cUrEyAXzlSNaY=";
     };
   };
   mod-changeskincore = {
@@ -282,5 +275,13 @@
     mod = "forge";
     mc-version = "1.16.5";
     name = "mp-server-pause";
+  };
+  server-starter = {
+    pname = "server-starter";
+    version = "2.5.1";
+    src = fetchurl {
+      url = "https://github.com/EnigmaticaModpacks/ServerStarter/releases/download/v2.5.1/serverstarter-2.5.1.jar";
+      sha256 = "sha256-r9TtemmEghY5soQhMoGYKlmYw7eUq0cUrEyAXzlSNaY=";
+    };
   };
 }
