@@ -9,10 +9,9 @@ mkForgeServer {
 
   jdk = jdk17;
   installer = "serverstarter";
-  startScript = "unix-args";
   flatten = true;
   cleanup = ["installer.jar.log" "modpack-download.zip"];
-  outputHash = "sha256-sjD5dNEHUNii4uyiHG17K0iMs2khYOcSd+6pcPWqhNY=";
+  outputHash = "sha256-euQvqd2h+Bm1Gi8wm1xNRDRv/mDcPfpX71cUeJftQ/I=";
 
   meta = {
     description = "Enigmatica 9 Expert is a quest-guided progression modpack for Minecraft 1.19.2";

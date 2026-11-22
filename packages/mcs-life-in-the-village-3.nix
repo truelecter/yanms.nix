@@ -9,7 +9,6 @@ mkForgeServer {
 
   jdk = jdk17;
   installer = "prebuilt";
-  startScript = "unix-args";
   prebuiltDir = "LITV*";
 
   meta = {

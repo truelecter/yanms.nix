@@ -9,11 +9,10 @@ mkForgeServer {
 
   jdk = jdk8;
   installer = "forge";
-  startScript = "forge-jar";
   forgeInstaller = sources.forge-server-14-23-5-2860.src;
   stripSrg = false;
   cleanup = ["forge-*installer.jar" "*.log" "ServerStart.sh" "ServerStart.bat" "Install.sh" "Install.bat"];
-  outputHash = "sha256-pg7Jtdfi+oNlgioAv1ZHOXqq0ePRv6erKV9kNIQArA0=";
+  outputHash = "sha256-1bZAL6ZqkGnkrvs22U8o/BJ3SxsWNzk450Ir+PVlT0o=";
 
   meta = {
     description = "SevTech: Ages is a massive modpack packed with content and progression";

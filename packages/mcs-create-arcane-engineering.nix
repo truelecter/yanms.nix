@@ -9,10 +9,9 @@ mkForgeServer {
 
   jdk = jdk17;
   installer = "forge";
-  startScript = "unix-args";
   forgeInstaller = sources.forge-server-40-2-9.src;
   cleanup = ["*.log" "run.bat"];
-  outputHash = "sha256-w0PWwoY/f9ujlWP5Vyc0iG9TmmYQEztbEc3GHwK7UA0=";
+  outputHash = "sha256-avXY4crjZv0uJcn+L8dTLmr4MUyeLmodu+h51OfRyUE=";
 
   meta = {
     description = "Embark on an enchanting journey with Create Arcane Engineering, a meticulously crafted collection of both popular and custom mods";

@@ -9,10 +9,9 @@ mkForgeServer {
 
   jdk = jdk17;
   installer = "forge";
-  startScript = "unix-args";
   forgeInstaller = sources.forge-server-40-2-9.src;
   cleanup = ["*.log" "run.bat"];
-  outputHash = "sha256-daLgV+ck7+/m4igNakC8Dfycbq5e0RmxvJHeqg6dZ3w=";
+  outputHash = "sha256-/exhV+tCFTfZGkwY0Pia1B6m7SdV+MKVGOrAQ6cazuA=";
 
   meta = {
     description = "DawnCraft - An Adventure RPG Modpack";

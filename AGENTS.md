@@ -9,7 +9,7 @@ flake.nix                    inputs, `packages`, `checks`, `overlays.default`, `
 lib/import-packages.nix      callPackage for every `<name>.nix` in a folder (`_`-prefixed names skipped)
 lib/jvm-flags.nix            JVM flag presets
 packages/mcs-*.nix           one pack per file, built with `packages/_lib/mk-forge-server.nix`
-packages/_files/             the packs' `start.sh` scripts
+packages/_files/             `start-forge.sh`, the packs' `start.sh`
 modules/yanms.nix            the module; `_`-prefixed files are its submodules
 tests/module.nix             NixOS test with a fake server (`checks.<system>.module`)
 sources/                     nvfetcher: `nvfetcher.toml` and the generated sources (packs, installers, mods)
@@ -18,7 +18,7 @@ sources/                     nvfetcher: `nvfetcher.toml` and the generated sourc
 
 ## Packs
 
-- Packs that download while installing (`installer = "forge"` or `"serverstarter"`) are fixed-output derivations. Their output includes `start.sh` from `packages/_files/`, so changing either script changes every pack's hash. Keep the builder's commands stable too: the store path only depends on the name and `outputHash`, so a changed command breaks the next real rebuild, not the evaluation.
+- Packs that download while installing (`installer = "forge"` or `"serverstarter"`) are fixed-output derivations. Their output includes `start.sh` (`packages/_files/start-forge.sh`), so changing the script changes every pack's hash. Keep the builder's commands stable too: the store path only depends on the name and `outputHash`, so a changed command breaks the next real rebuild, not the evaluation.
 - A new pack or version: add the server zip to `sources/nvfetcher.toml` with `src.manual` and `fetch.url` (forgecdn), run `nix develop -c nvfetcher --keep-old -c sources/nvfetcher.toml -o sources`, add `packages/mcs-<name>.nix` with `outputHash = lib.fakeHash`, build it on Linux, and copy the hash from the error.
 - Mod jars are nvfetcher entries with `passthru = { mod = "<loader>", mc-version = "...", name = "..." }`; they show up as `minecraftMods.<loader>.<mc-version>.<name>`.
 

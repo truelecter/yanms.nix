@@ -9,9 +9,8 @@ mkForgeServer {
 
   jdk = jdk8;
   installer = "serverstarter";
-  startScript = "forge-jar";
   cleanup = ["installer.jar.log" "modpack-download.zip"];
-  outputHash = "sha256-b7xc6lKWgafmsgSaCCm32FNAd1nWpurEXcgpEwz/KSg=";
+  outputHash = "sha256-Ee5onUlPdnYWkFkO3G77qZYH+gSwUmW+vAGNWiRf6iU=";
 
   meta = {
     description = "Enigmatica 6 Expert is a quest-guided progression modpack for Minecraft 1.16.5";

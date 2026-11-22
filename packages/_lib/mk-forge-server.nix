@@ -7,8 +7,8 @@
 #
 # "forge" and "serverstarter" download during the build, so they are fixed-output derivations:
 # set `outputHash` (build once with `lib.fakeHash` to get it). The output also holds `start.sh`
-# ("unix-args" for Forge 1.17 and later, "forge-jar" before); it is part of every pack's hash, so
-# changing either script means new hashes for all packs.
+# (`_files/start-forge.sh`, for every Forge version); it is part of every pack's hash, so changing
+# it means new hashes for all packs.
 {
   lib,
   stdenvNoCC,
@@ -21,7 +21,6 @@
   src,
   jdk,
   installer,
-  startScript,
   forgeInstaller ? null,
   serverStarter ? sources.server-starter.src,
   # Unzip without the archive's folders (`unzip -j`).
@@ -36,23 +35,19 @@
   meta ? {},
 }:
 assert lib.assertOneOf "installer" installer ["forge" "serverstarter" "prebuilt"];
-assert lib.assertOneOf "startScript" startScript ["unix-args" "forge-jar"];
 assert installer == "forge" -> forgeInstaller != null;
 assert installer == "prebuilt" -> prebuiltDir != null;
 assert installer != "prebuilt" -> outputHash != null; let
-  start =
-    {
-      unix-args = ./../_files/start-forge-1.18.sh;
-      forge-jar = ./../_files/start-forge-before-1.18.sh;
-    }
-    .${
-      startScript
-    };
+  start = ./../_files/start-forge.sh;
 
   install =
     {
       forge = "java -jar ${forgeInstaller} --installServer $out";
-      serverstarter = "java -jar ${serverStarter} install";
+      # media.forgecdn.net answers 403 now; mediafilez.forgecdn.net serves the same files.
+      serverstarter = ''
+        sed -i 's|//media\.forgecdn\.net/|//mediafilez.forgecdn.net/|g' server-setup-config.yaml
+        java -jar ${serverStarter} install
+      '';
     }
     .${
       installer
